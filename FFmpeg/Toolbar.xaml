@@ -8,54 +8,42 @@
              mc:Ignorable="d" 
              d:DesignHeight="30"
              d:DesignWidth="800"
-             Background="AntiqueWhite">
+             Background="Black">
     <UserControl.Resources>
-        <Style x:Key="FocusVisual">
-            <Setter Property="Control.Template">
-                <Setter.Value>
-                    <ControlTemplate>
-                        <Rectangle Margin="2" StrokeDashArray="1 2" SnapsToDevicePixels="true" StrokeThickness="1" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <SolidColorBrush x:Key="Button.Static.Background" Color="#FFDDDDDD"/>
-        <SolidColorBrush x:Key="Button.Static.Border" Color="#FF707070"/>
-        <SolidColorBrush x:Key="Button.MouseOver.Background" Color="#FFBEE6FD"/>
-        <SolidColorBrush x:Key="Button.MouseOver.Border" Color="#FF3C7FB1"/>
-        <SolidColorBrush x:Key="Button.Pressed.Background" Color="#FFC4E5F6"/>
-        <SolidColorBrush x:Key="Button.Pressed.Border" Color="#FF2C628B"/>
-        <SolidColorBrush x:Key="Button.Disabled.Background" Color="#FFF4F4F4"/>
-        <SolidColorBrush x:Key="Button.Disabled.Border" Color="#FFADB2B5"/>
-        <SolidColorBrush x:Key="Button.Disabled.Foreground" Color="#FF838383"/>
         <Style x:Key="ButtonQuit" TargetType="{x:Type Button}">
-            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
-            <Setter Property="Background" Value="{StaticResource Button.Static.Background}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource Button.Static.Border}"/>
-            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Padding" Value="1"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <Grid Height="30" Width="40">
-                            <Rectangle />
+                            <Rectangle Name="QuitBackground" Fill="Red" Opacity="0.0" />
                             <Path Data="M30,10 L10,30" Fill="#FFF4F4F5" Margin="11,6,11,6" Stretch="Fill" Stroke="White" d:LayoutOverrides="HorizontalAlignment, VerticalAlignment" StrokeThickness="2"/>
                             <Path Data="M7.625,4 L28.381211,24.756211" Fill="White" Margin="11,6,11,6" Stretch="Fill" Stroke="White" d:LayoutOverrides="HorizontalAlignment, VerticalAlignment" StrokeThickness="2"/>
                         </Grid>
                         <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="true">
+                            <Trigger Property="IsMouseOver" Value="True">
                                 <Trigger.EnterActions>
-                                    <BeginStoryboard >
+                                    <BeginStoryboard>
                                         <Storyboard>
-                                            <ColorAnimation
+                                            <DoubleAnimation 
+                                                Storyboard.TargetProperty="Opacity"
+                                                Storyboard.TargetName="QuitBackground"
+                                                To="1.0" 
+                                                Duration="0:0:0.2" />
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation 
+                                                Storyboard.TargetProperty="Opacity" 
+                                                Storyboard.TargetName="QuitBackground"
+                                                To="0.0" 
+                                                Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
                             </Trigger>
-                            <Trigger Property="IsPressed" Value="true"/>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
@@ -73,7 +61,7 @@
             Orientation="Horizontal" 
             HorizontalAlignment="Right">
             <Button Command="commands:ToolbarCommands.Minimize" Content="Minimize" />
-            <Button Style="{DynamicResource ButtonQuit}" Command="commands:ToolbarCommands.Quit" Content="Quit" />
+            <Button Style="{StaticResource ButtonQuit}" Command="commands:ToolbarCommands.Quit" Content="Quit" />
         </StackPanel>
     </DockPanel>
 </UserControl>
