@@ -7,61 +7,55 @@
              xmlns:commands="clr-namespace:FFmpeg.Commands"
              mc:Ignorable="d" 
              d:DesignHeight="30"
-             d:DesignWidth="800"
-             Background="Black">
+             d:DesignWidth="800">
     <UserControl.Resources>
-        <Style x:Key="ButtonQuit" TargetType="{x:Type Button}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Grid Height="30" Width="40">
-                            <Rectangle Name="QuitBackground" Fill="Red" Opacity="0.0" />
-                            <Path Data="M30,10 L10,30" Fill="#FFF4F4F5" Margin="11,6,11,6" Stretch="Fill" Stroke="White" d:LayoutOverrides="HorizontalAlignment, VerticalAlignment" StrokeThickness="2"/>
-                            <Path Data="M7.625,4 L28.381211,24.756211" Fill="White" Margin="11,6,11,6" Stretch="Fill" Stroke="White" d:LayoutOverrides="HorizontalAlignment, VerticalAlignment" StrokeThickness="2"/>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Trigger.EnterActions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation 
-                                                Storyboard.TargetProperty="Opacity"
-                                                Storyboard.TargetName="QuitBackground"
-                                                To="1.0" 
-                                                Duration="0:0:0.2" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </Trigger.EnterActions>
-                                <Trigger.ExitActions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation 
-                                                Storyboard.TargetProperty="Opacity" 
-                                                Storyboard.TargetName="QuitBackground"
-                                                To="0.0" 
-                                                Duration="0:0:0.2" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </Trigger.ExitActions>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles/QuitButton.xaml" />
+                <ResourceDictionary Source="Styles/MinimizeButton.xaml" />
+                <ResourceDictionary Source="Styles/Common.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </UserControl.Resources>
     <UserControl.CommandBindings>
-        <CommandBinding Command="commands:ToolbarCommands.Quit" Executed="QuitCommandExecuted" CanExecute="QuitCommandExecuted" />
-        <CommandBinding Command="commands:ToolbarCommands.Minimize" Executed="MinimizeCommandExecuted" CanExecute="MinimizeCommandExecuted" />
+        <CommandBinding 
+            Command="commands:ToolbarCommands.Quit" 
+            Executed="QuitCommandExecuted" 
+            CanExecute="QuitCommandExecuted" />
+        <CommandBinding 
+            Command="commands:ToolbarCommands.Minimize" 
+            Executed="MinimizeCommandExecuted" 
+            CanExecute="MinimizeCommandExecuted" />
     </UserControl.CommandBindings>
-    <DockPanel>
-        <TextBlock Text="FFmpeg" />
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="80"/>
+        </Grid.ColumnDefinitions>
+        <Image 
+            Source="icon.png" 
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            Margin="2"/>
+        <TextBlock 
+            Text="FFmpeg" 
+            FontSize="16" 
+            Grid.Column="1"
+            VerticalAlignment="Center" />
         <StackPanel 
-            DockPanel.Dock="Right" 
             Orientation="Horizontal" 
-            HorizontalAlignment="Right">
-            <Button Command="commands:ToolbarCommands.Minimize" Content="Minimize" />
-            <Button Style="{StaticResource ButtonQuit}" Command="commands:ToolbarCommands.Quit" Content="Quit" />
+            Grid.Column="2">
+            <Button 
+                Style="{StaticResource MinimizeButton}" 
+                Background="CadetBlue" 
+                Command="commands:ToolbarCommands.Minimize" 
+                Content="Minimize" />
+            <Button 
+                Style="{StaticResource QuitButton}" 
+                Background="Crimson" 
+                Command="commands:ToolbarCommands.Quit" 
+                Content="Quit" />
         </StackPanel>
-    </DockPanel>
+    </Grid>
 </UserControl>

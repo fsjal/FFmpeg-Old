@@ -10,7 +10,11 @@
         WindowStyle="None"
         AllowsTransparency="False"
         Height="450" 
-        Width="800">
+        Width="800"
+        Background="#292929">
+    <Window.Resources>
+        <ResourceDictionary Source="Styles/Common.xaml" />
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -28,6 +32,8 @@
             Grid.Row="0" 
             Grid.ColumnSpan="3"
             x:Name="Toolbar"/>
+        <TextBox x:Name="textBox" Grid.Column="1" HorizontalAlignment="Left" Margin="219,197,0,0" Grid.Row="1" Text="TextBox" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <Image x:Name="image" Grid.Column="1" HorizontalAlignment="Left" Height="100" Margin="398,277,0,0" Grid.Row="1" VerticalAlignment="Top" Width="100" Source="icon.png"/>
 
     </Grid>
 </Window>
