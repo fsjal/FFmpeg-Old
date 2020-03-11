@@ -4,20 +4,18 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FFmpeg"
+        xmlns:controls="clr-namespace:FFmpeg.Controls"
         mc:Ignorable="d"
         Title="FFmpeg" 
+        WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         WindowStyle="None"
         AllowsTransparency="False"
-        Height="450" 
-        Width="800"
-        Background="#292929">
-    <Window.Resources>
-        <ResourceDictionary Source="Styles/Common.xaml" />
-    </Window.Resources>
+        Height="600" 
+        Width="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="60"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="10"/>
         </Grid.RowDefinitions>
@@ -26,14 +24,10 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="10"/>
         </Grid.ColumnDefinitions>
-
-        <local:Toolbar 
-            Grid.Column="0" 
-            Grid.Row="0" 
-            Grid.ColumnSpan="3"
-            x:Name="Toolbar"/>
-        <TextBox x:Name="textBox" Grid.Column="1" HorizontalAlignment="Left" Margin="219,197,0,0" Grid.Row="1" Text="TextBox" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-        <Image x:Name="image" Grid.Column="1" HorizontalAlignment="Left" Height="100" Margin="398,277,0,0" Grid.Row="1" VerticalAlignment="Top" Width="100" Source="icon.png"/>
-
+        <Border Grid.Column="0" Grid.Row="1" BorderThickness="0,0,0.25,0" BorderBrush="Black" Margin="0,25,0,0" Grid.RowSpan="2" Padding="0,0,5,0">
+            <controls:Menu Width="150" />
+        </Border>
+        <controls:Toolbar Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" x:Name="Toolbar"/>
+        <Frame Grid.Column="1" Grid.Row="1" Source="/Pages/ConvertPage.xaml" />
     </Grid>
 </Window>

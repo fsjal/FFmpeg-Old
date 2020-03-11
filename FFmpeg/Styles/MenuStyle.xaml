@@ -1,0 +1,36 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:FFmpeg.Styles">
+    <Style x:Key="Menu" TargetType="RadioButton">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Grid>
+                        <Border
+                            BorderThickness="0"
+                            BorderBrush="Violet"
+                            Name="MenuBorder"
+                            Height="40">
+                            <ContentPresenter 
+                                Name="MenuContent"
+                                VerticalAlignment="Center" 
+                                HorizontalAlignment="Left"
+                                Margin="10,0,0,0"/>
+                        </Border>
+                        <Border    
+                            Background="Green"
+                            Name="MenuBorderMask"
+                            Opacity="0.0" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="MenuBorderMask" Property="Opacity" Value="0.1" />
+                            <Setter TargetName="MenuBorder" Property="BorderThickness" Value="3,0,0,0" />
+                            <Setter TargetName="MenuContent" Property="Margin" Value="7,0,0,0" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

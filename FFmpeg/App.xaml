@@ -3,4 +3,11 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:FFmpeg"
-    StartupUri="MainWindow.xaml" />
+    StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <FontFamily x:Key="Roboto">pack://application:,,,/FFmpeg;component/Resources/Fonts/#Roboto</FontFamily>
+        <FontFamily x:Key="RobotoBold">pack://application:,,,/FFmpeg;component/Resources/Fonts/#Roboto Bold</FontFamily>
+        <FontFamily x:Key="RobotoItalic">pack://application:,,,/FFmpeg;component/Resources/Fonts/#Roboto Italic</FontFamily>
+        <FontFamily x:Key="RobotoBlack">pack://application:,,,/FFmpeg;component/Resources/Fonts/#Roboto Black</FontFamily>
+    </Application.Resources>
+</Application>

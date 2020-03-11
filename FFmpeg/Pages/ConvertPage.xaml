@@ -1,0 +1,94 @@
+﻿<Page x:Class="FFmpeg.Pages.ConvertPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:FFmpeg.Pages"
+      xmlns:controls="clr-namespace:FFmpeg.Controls"
+      xmlns:converters="clr-namespace:FFmpeg.Converters"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ConvertPage"
+      Background="White">
+    <Page.Resources>
+        <Style x:Key="StackPanelStyle" TargetType="{x:Type StackPanel}">
+            <Setter Property="Margin" Value="10" />
+        </Style>
+        <Style x:Key="BorderStackPanelStyle" TargetType="{x:Type Border}">
+            <Setter Property="Background" Value="#5EEE" />
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="BorderBrush" Value="#DDD" />
+            <Setter Property="BorderThickness" Value="0,0,0,2" />
+            <Setter Property="Margin" Value="5,25,5,0" />
+        </Style>
+        <Style x:Key="ConvertHeader" TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontFamily" Value="{StaticResource RobotoBlack}" />
+            <Setter Property="Margin" Value="5,0,0,10" />
+        </Style>
+        <Style x:Key="Spacing" TargetType="{x:Type Control}">
+            <Setter Property="Margin" Value="0,3" />
+        </Style>
+        <converters:FieldConverter x:Key="FieldConverter" />
+    </Page.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="300"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <!--Media-->
+            <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource BorderStackPanelStyle}" />
+            <StackPanel Grid.Row="0" Grid.Column="0" Style="{StaticResource StackPanelStyle}">
+                <TextBlock Text="Media" Style="{StaticResource ConvertHeader}" />
+                <controls:Input Hint="Start" InputText="{Binding MediaStart, Mode=TwoWay}" Style="{StaticResource Spacing}" />
+                <controls:Input Hint="End" InputText="{Binding MediaEnd, Mode=TwoWay}" />
+            </StackPanel>
+            <!--Audio-->
+            <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource BorderStackPanelStyle}" />
+            <StackPanel Grid.Row="1" Grid.Column="0" Style="{StaticResource StackPanelStyle}">
+                <TextBlock Text="Audio" Style="{StaticResource ConvertHeader}" />
+                <ComboBox ItemsSource="{Binding AudioCodecs}" Style="{StaticResource Spacing}" />
+                <controls:Input Hint="Bitrate" InputText="{Binding AudioBitrate, Mode=TwoWay, Converter={StaticResource FieldConverter}}" Style="{StaticResource Spacing}" />
+                <CheckBox Content="Audio Disabled" IsChecked="{Binding IsAudioDisabled, Mode=TwoWay}" FontFamily="{StaticResource Roboto}" Style="{StaticResource Spacing}" />
+            </StackPanel>
+            <!--Video-->
+            <Border Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="2" Style="{StaticResource BorderStackPanelStyle}" />
+            <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Style="{StaticResource StackPanelStyle}">
+                    <TextBlock Text="Video" Style="{StaticResource ConvertHeader}" />
+                    <ComboBox ItemsSource="{Binding VideoCodecs}" Style="{StaticResource Spacing}" />
+                    <controls:Input Hint="Width" InputText="{Binding VideoWidth, Mode=TwoWay, Converter={StaticResource FieldConverter}}" Style="{StaticResource Spacing}" />
+                    <controls:Input Hint="Height" InputText="{Binding VideoHeight, Mode=TwoWay, Converter={StaticResource FieldConverter}}" Style="{StaticResource Spacing}" />
+                    <CheckBox Content="Video Disabled" IsChecked="{Binding IsVideoDisabled, Mode=TwoWay}" FontFamily="{StaticResource Roboto}" Style="{StaticResource Spacing}" />
+                </StackPanel>
+                <Border Grid.Column="1" BorderThickness="0.25,0,0,0" BorderBrush="Black" Margin="10,40,10,10">
+                    <StackPanel Margin="15,9">
+                        <ComboBox ItemsSource="{Binding VideoPresets}" Style="{StaticResource Spacing}"/>
+                        <controls:Input Hint="Bitrate" InputText="{Binding VideoBitrate, Mode=TwoWay, Converter={StaticResource FieldConverter}}" Style="{StaticResource Spacing}" />
+                        <controls:Input Hint="Quality" InputText="{Binding VideoQuality, Mode=TwoWay, Converter={StaticResource FieldConverter}}" Style="{StaticResource Spacing}" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+        <ListView Grid.Row="1" Margin="5,5"></ListView>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0" Width="134">
+            <Button Content="Add Files" Padding="10,0" Command="{Binding AddFiles}" />
+            <Button Content="Convert" Padding="10,0" Command="{Binding Convert}" />
+        </StackPanel>
+    </Grid>
+</Page>
