@@ -1,18 +1,20 @@
 ﻿using FFmpeg.Commands;
 using FFmpeg.Entities;
+using FFmpeg.Model;
+using FFmpeg.Model.Codecs;
+using FFmpeg.Util;
+using log4net;
 using Microsoft.Win32;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows;
+using System.Threading;
 using System.Windows.Controls;
 using Path = System.IO.Path;
 
 namespace FFmpeg.Pages
 {
-    /// <summary>
-    /// Interaction logic for ConvertPage.xaml
-    /// </summary>
     public partial class ConvertPage : Page, INotifyPropertyChanged
     {
         public ObservableCollection<Media> Medias { get; } = new ObservableCollection<Media>();
@@ -20,8 +22,8 @@ namespace FFmpeg.Pages
         public RelayCommand Convert { get; } = new RelayCommand();
 
         // Media
-        private string mediaStart;
-        public string MediaStart
+        private string? mediaStart;
+        public string? MediaStart
         {
             get
             {
@@ -33,8 +35,8 @@ namespace FFmpeg.Pages
                 OnPropertyChanged("MediaStart");
             }
         }
-        private string mediaEnd;
-        public string MediaEnd
+        private string? mediaEnd;
+        public string? MediaEnd
         {
             get
             {
@@ -48,9 +50,11 @@ namespace FFmpeg.Pages
         }
 
         // Audio
-        public ObservableCollection<Media> AudioCodecs { get; } = new ObservableCollection<Media>();
-        private int audioBitrate;
-        public int AudioBitrate
+        public ObservableCollection<AudioCodec> AudioCodecs { get; } = 
+            new ObservableCollection<AudioCodec>(Codecs.AUDIOS);
+        public AudioCodec SelectedAudioCodec { get; set; }
+        private int? audioBitrate;
+        public int? AudioBitrate
         {
             get
             {
@@ -62,8 +66,8 @@ namespace FFmpeg.Pages
                 OnPropertyChanged("AudioBitrate");
             }
         }
-        private bool isAudioDisabled;
-        public bool IsAudioDisabled
+        private bool? isAudioDisabled = false;
+        public bool? IsAudioDisabled
         {
             get
             {
@@ -77,9 +81,11 @@ namespace FFmpeg.Pages
         }
 
         // Video
-        public ObservableCollection<Media> VideosCodecs { get; } = new ObservableCollection<Media>();
-        private int videoWidth;
-        public int VideoWidth
+        public ObservableCollection<VideoCodec> VideoCodecs { get; } = 
+            new ObservableCollection<VideoCodec>(Codecs.VIDEOS);
+        public VideoCodec SelectedVideoCodec { get; set; }
+        private int? videoWidth;
+        public int? VideoWidth
         {
             get
             {
@@ -91,8 +97,8 @@ namespace FFmpeg.Pages
                 OnPropertyChanged("VideoWidth");
             }
         }        
-        private int videoHeight;
-        public int VideoHeight
+        private int? videoHeight;
+        public int? VideoHeight
         {
             get
             {
@@ -104,8 +110,8 @@ namespace FFmpeg.Pages
                 OnPropertyChanged("VideoHeight");
             }
         }
-        private int videoBitrate;
-        public int VideoBitrate
+        private int? videoBitrate;
+        public int? VideoBitrate
         {
             get
             {
@@ -117,9 +123,10 @@ namespace FFmpeg.Pages
                 OnPropertyChanged("VideoBitrate");
             }
         }
-        public ObservableCollection<Media> VideosPresets { get; } = new ObservableCollection<Media>();
-        private int videoQuality;
-        public int VideoQuality
+        public ObservableCollection<string> VideoPresets { get; } = new ObservableCollection<string>(Codecs.VIDEO_PRESETS);
+        public string? SelectedVideoPreset { get; set; }
+        private int? videoQuality;
+        public int? VideoQuality
         {
             get
             {
@@ -131,8 +138,8 @@ namespace FFmpeg.Pages
                 OnPropertyChanged("VideoQuality");
             }
         }
-        private bool isVideoDisabled;
-        public bool IsVideoDisabled
+        private bool? isVideoDisabled = false;
+        public bool? IsVideoDisabled
         {
             get
             {
@@ -144,6 +151,9 @@ namespace FFmpeg.Pages
                 OnPropertyChanged("IsVideoDisabled");
             }
         }
+
+        // Logging
+        private ILog log = Logger.Log;
 
         public ConvertPage()
         {
@@ -158,19 +168,18 @@ namespace FFmpeg.Pages
         {
             AddFiles.CanExecuteCommand = (e) => true;
             AddFiles.ExecuteCommand = (e) => OnAddFileClicked();
-            Convert.CanExecuteCommand = (e) => Medias.Count != 0;
-            Convert.ExecuteCommand = (e) => OnAddFileClicked();
+            // Convert.CanExecuteCommand = (e) => Medias.Count != 0;
+            Convert.CanExecuteCommand = (e) => true;
+            Convert.ExecuteCommand = (e) => OnConvert();
         }
 
         private void OnAddFileClicked()
         {
-            /*var medias = GetFiles();
+            var medias = GetFiles();
             if (medias != null)
             {
-                Medias.Clear();
                 medias.ToList().ForEach(media => Medias.Add(media));
-            }*/
-            MessageBox.Show(VideoWidth.ToString());
+            }
         }
 
         private Media[] GetFiles()
@@ -186,14 +195,50 @@ namespace FFmpeg.Pages
 
             if (fileDialog.ShowDialog() == true)
             {
-                 return fileDialog.FileNames.Select(name => new Media { FileName = Path.GetFileName(name) }).ToArray();
-                
+                 return fileDialog.FileNames.Select(name => new Media { FileName = Path.GetFileName(name), Path = name }).ToArray();
             }
             return null;
         }
 
+        private void OnConvert()
+        {
+            List<IParam> parameters = new List<IParam>();
+            parameters.Add(new SimpleParam("-ss", MediaStart));
+            parameters.Add(new SimpleParam("-to", MediaEnd));
+            parameters.Add(new SimpleParam("b:a", AudioBitrate != null ? $"{AudioBitrate}K" : null));
+            parameters.Add(new SimpleParam("b:v", VideoBitrate != null ? $"{VideoBitrate}K" : null));
+            if (IsVideoDisabled == true) parameters.Add(new SimpleParam("-vn", ""));
+            if (IsAudioDisabled == true) parameters.Add(new SimpleParam("-an", ""));
+            if (VideoWidth != null || VideoHeight != null)
+            {
+                int? width = VideoWidth != null && VideoWidth != 0 ? VideoWidth : -1;
+                int? height = VideoHeight != null && VideoHeight != 0 ? VideoHeight : -1;
+
+                parameters.Add(new SimpleParam("-vf", $"scale={width}:{height}"));
+            }
+            parameters.Add(SelectedVideoCodec);
+            parameters.Add(SelectedAudioCodec);
+            parameters.Add(new SimpleParam("-preset", 
+                SelectedVideoPreset == Codecs.VIDEO_PRESETS[0] ? null : SelectedVideoPreset));
+            if (SelectedVideoCodec.Value != null && VideoQuality != 0)
+            {
+                parameters.Add(new SimpleParam(SelectedVideoCodec.QualityKey, VideoQuality));
+            }
+            StartConvert(parameters.Where(e => e.Value != null).ToList());
+        }
+
+        private async void StartConvert(List<IParam> parameters)
+        {
+            string param = string.Join(" ", parameters.Select(e => $"{e.Key} {e.Value}"));
+            foreach (Media media in Medias)
+            {
+                CancellationTokenSource tokenSource = new CancellationTokenSource();
+                await FFmpegConverter.ConvertAsync(media, parameters, tokenSource.Token);
+                log.Info("finished");
+            }
+        }
+
         private void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        
     }
 }

@@ -8,14 +8,13 @@
       xmlns:converters="clr-namespace:FFmpeg.Converters"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="ConvertPage"
-      Background="White">
+      Title="ConvertPage">
     <Page.Resources>
         <Style x:Key="StackPanelStyle" TargetType="{x:Type StackPanel}">
             <Setter Property="Margin" Value="10" />
         </Style>
         <Style x:Key="BorderStackPanelStyle" TargetType="{x:Type Border}">
-            <Setter Property="Background" Value="#5EEE" />
+            <Setter Property="Background" Value="White" />
             <Setter Property="CornerRadius" Value="5" />
             <Setter Property="BorderBrush" Value="#DDD" />
             <Setter Property="BorderThickness" Value="0,0,0,2" />
@@ -58,7 +57,7 @@
             <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource BorderStackPanelStyle}" />
             <StackPanel Grid.Row="1" Grid.Column="0" Style="{StaticResource StackPanelStyle}">
                 <TextBlock Text="Audio" Style="{StaticResource ConvertHeader}" />
-                <ComboBox ItemsSource="{Binding AudioCodecs}" Style="{StaticResource Spacing}" />
+                <ComboBox ItemsSource="{Binding AudioCodecs}" SelectedItem="{Binding SelectedAudioCodec, Mode=OneWayToSource}" Style="{StaticResource Spacing}" SelectedIndex="0" />
                 <controls:Input Hint="Bitrate" InputText="{Binding AudioBitrate, Mode=TwoWay, Converter={StaticResource FieldConverter}}" Style="{StaticResource Spacing}" />
                 <CheckBox Content="Audio Disabled" IsChecked="{Binding IsAudioDisabled, Mode=TwoWay}" FontFamily="{StaticResource Roboto}" Style="{StaticResource Spacing}" />
             </StackPanel>
@@ -71,21 +70,38 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Style="{StaticResource StackPanelStyle}">
                     <TextBlock Text="Video" Style="{StaticResource ConvertHeader}" />
-                    <ComboBox ItemsSource="{Binding VideoCodecs}" Style="{StaticResource Spacing}" />
-                    <controls:Input Hint="Width" InputText="{Binding VideoWidth, Mode=TwoWay, Converter={StaticResource FieldConverter}}" Style="{StaticResource Spacing}" />
-                    <controls:Input Hint="Height" InputText="{Binding VideoHeight, Mode=TwoWay, Converter={StaticResource FieldConverter}}" Style="{StaticResource Spacing}" />
+                    <ComboBox ItemsSource="{Binding VideoCodecs}" SelectedItem="{Binding SelectedVideoCodec, Mode=OneWayToSource}" SelectedIndex="4" Margin="0,3,10,3" />
+                    <controls:Input Hint="Width" InputText="{Binding VideoWidth, Mode=TwoWay, Converter={StaticResource FieldConverter}}" Margin="0,3,10,3" />
+                    <controls:Input Hint="Height" InputText="{Binding VideoHeight, Mode=TwoWay, Converter={StaticResource FieldConverter}}" Margin="0,3,10,3" />
                     <CheckBox Content="Video Disabled" IsChecked="{Binding IsVideoDisabled, Mode=TwoWay}" FontFamily="{StaticResource Roboto}" Style="{StaticResource Spacing}" />
                 </StackPanel>
-                <Border Grid.Column="1" BorderThickness="0.25,0,0,0" BorderBrush="Black" Margin="10,40,10,10">
+                <Border Grid.Column="1" BorderThickness="0.25,0,0,0" BorderBrush="Black" Margin="0,40,10,10">
                     <StackPanel Margin="15,9">
-                        <ComboBox ItemsSource="{Binding VideoPresets}" Style="{StaticResource Spacing}"/>
+                        <ComboBox ItemsSource="{Binding VideoPresets}" SelectedItem="{Binding SelectedVideoPreset, Mode=OneWayToSource}" Style="{StaticResource Spacing}" SelectedIndex="0" />
                         <controls:Input Hint="Bitrate" InputText="{Binding VideoBitrate, Mode=TwoWay, Converter={StaticResource FieldConverter}}" Style="{StaticResource Spacing}" />
                         <controls:Input Hint="Quality" InputText="{Binding VideoQuality, Mode=TwoWay, Converter={StaticResource FieldConverter}}" Style="{StaticResource Spacing}" />
                     </StackPanel>
                 </Border>
             </Grid>
         </Grid>
-        <ListView Grid.Row="1" Margin="5,5"></ListView>
+        <ListView Grid.Row="1" Margin="5,5" ItemsSource="{Binding Medias}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Filename" DisplayMemberBinding="{Binding FileName}" Width="400" />
+                    <GridViewColumn Header="ETA" DisplayMemberBinding="{Binding Eta}" Width="100" />
+                    <GridViewColumn Header="Progress" Width="220">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <ProgressBar Value="{Binding Progress}" Width="220" />
+                                    <TextBlock Text="{Binding Progress, StringFormat=\{0\}%}" HorizontalAlignment="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0" Width="134">
             <Button Content="Add Files" Padding="10,0" Command="{Binding AddFiles}" />
             <Button Content="Convert" Padding="10,0" Command="{Binding Convert}" />

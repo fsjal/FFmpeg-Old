@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.Windows;
 using System.Windows.Data;
 
 namespace FFmpeg.Converters
@@ -9,24 +8,23 @@ namespace FFmpeg.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value != null && value is int) return ((int) value == 0) ? "" : value.ToString();
-            return "";
+            if (value != null && value is int) return ((int) value == 0) ? null : value.ToString();
+            return null;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value != null && value is string)
+            String stringValue = (String)value;
+            
+            if (stringValue == null || stringValue == "") return null;
+            try
             {
-                try
-                {
-                    return int.Parse(value.ToString());
-                }
-                catch (FormatException)
-                {
-                    return value;
-                }
+                return int.Parse(stringValue);
             }
-            return 0;
+            catch (FormatException)
+            { 
+                return value;
+            }
         }
     }
 }
