@@ -163,6 +163,7 @@ namespace FFmpeg.Pages
         {
             InitializeComponent();
             SetupCommands();
+
             MediasView = new ListCollectionView(Medias);
             MediasView.GroupDescriptions.Add(new PropertyGroupDescription("State"));
             MediasView.IsLiveGrouping = true;
