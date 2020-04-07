@@ -16,13 +16,5 @@
             Content="Media Convert" 
             IsChecked="True"
             Style="{StaticResource Menu}" />
-        <RadioButton 
-            BorderThickness="3"
-            Content="Media Merge" 
-            Style="{StaticResource Menu}" />
-        <RadioButton 
-            BorderThickness="3"
-            Content="Extract" 
-            Style="{StaticResource Menu}" />
     </StackPanel>
 </UserControl>

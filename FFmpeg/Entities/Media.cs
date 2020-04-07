@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using FFmpeg.Model;
+using System.ComponentModel;
 
 namespace FFmpeg.Entities
 {
@@ -30,7 +31,7 @@ namespace FFmpeg.Entities
                 OnPropertyChanged("FileName");
             }
         }
-        private int progress = 50;
+        private int progress;
         public int Progress
         {
             get
@@ -44,6 +45,19 @@ namespace FFmpeg.Entities
             }
         }
         public string Path { get; set; }
+        private State state = State.Ready;
+        public State State
+        {
+            get
+            {
+                return state;
+            }
+            set
+            {
+                state = value;
+                OnPropertyChanged("State");
+            }
+        }
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void OnPropertyChanged(string field) => 

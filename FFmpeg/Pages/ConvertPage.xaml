@@ -84,16 +84,16 @@
                 </Border>
             </Grid>
         </Grid>
-        <ListView Grid.Row="1" Margin="5,5" ItemsSource="{Binding Medias}">
+        <ListView Grid.Row="1" Margin="5,5" ItemsSource="{Binding MediasView}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Filename" DisplayMemberBinding="{Binding FileName}" Width="400" />
-                    <GridViewColumn Header="ETA" DisplayMemberBinding="{Binding Eta}" Width="100" />
-                    <GridViewColumn Header="Progress" Width="220">
+                    <GridViewColumn Header="ETA" DisplayMemberBinding="{Binding Eta}" Width="80" />
+                    <GridViewColumn Header="Progress" Width="120">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid>
-                                    <ProgressBar Value="{Binding Progress}" Width="220" />
+                                    <ProgressBar Value="{Binding Progress}" Width="120" />
                                     <TextBlock Text="{Binding Progress, StringFormat=\{0\}%}" HorizontalAlignment="Center" />
                                 </Grid>
                             </DataTemplate>
@@ -101,8 +101,17 @@
                     </GridViewColumn>
                 </GridView>
             </ListView.View>
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </ListView.GroupStyle>
         </ListView>
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0" Width="134">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,5,0" Width="134">
             <Button Content="Add Files" Padding="10,0" Command="{Binding AddFiles}" />
             <Button Content="Convert" Padding="10,0" Command="{Binding Convert}" />
         </StackPanel>

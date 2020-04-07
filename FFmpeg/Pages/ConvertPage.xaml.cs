@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Windows.Controls;
+using System.Windows.Data;
 using Path = System.IO.Path;
 
 namespace FFmpeg.Pages
@@ -18,12 +19,13 @@ namespace FFmpeg.Pages
     public partial class ConvertPage : Page, INotifyPropertyChanged
     {
         public ObservableCollection<Media> Medias { get; } = new ObservableCollection<Media>();
+        public ListCollectionView MediasView { get; }
         public RelayCommand AddFiles { get; } = new RelayCommand();
         public RelayCommand Convert { get; } = new RelayCommand();
 
         // Media
-        private string? mediaStart;
-        public string? MediaStart
+        private string mediaStart;
+        public string MediaStart
         {
             get
             {
@@ -35,8 +37,8 @@ namespace FFmpeg.Pages
                 OnPropertyChanged("MediaStart");
             }
         }
-        private string? mediaEnd;
-        public string? MediaEnd
+        private string mediaEnd;
+        public string MediaEnd
         {
             get
             {
@@ -124,7 +126,7 @@ namespace FFmpeg.Pages
             }
         }
         public ObservableCollection<string> VideoPresets { get; } = new ObservableCollection<string>(Codecs.VIDEO_PRESETS);
-        public string? SelectedVideoPreset { get; set; }
+        public string SelectedVideoPreset { get; set; }
         private int? videoQuality;
         public int? VideoQuality
         {
@@ -152,6 +154,8 @@ namespace FFmpeg.Pages
             }
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
         // Logging
         private ILog log = Logger.Log;
 
@@ -159,16 +163,17 @@ namespace FFmpeg.Pages
         {
             InitializeComponent();
             SetupCommands();
+            MediasView = new ListCollectionView(Medias);
+            MediasView.GroupDescriptions.Add(new PropertyGroupDescription("State"));
+            MediasView.IsLiveGrouping = true;
             DataContext = this;
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         private void SetupCommands()
         {
             AddFiles.CanExecuteCommand = (e) => true;
             AddFiles.ExecuteCommand = (e) => OnAddFileClicked();
-            // Convert.CanExecuteCommand = (e) => Medias.Count != 0;
+            Convert.CanExecuteCommand = (e) => Medias.Count != 0;
             Convert.CanExecuteCommand = (e) => true;
             Convert.ExecuteCommand = (e) => OnConvert();
         }

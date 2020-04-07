@@ -14,7 +14,6 @@ namespace FFmpeg.Model
 {
     public static class FFmpegConverter
     {
-
         private static ILog log = Logger.Log;
 
         public static async Task ConvertAsync(Media media, List<IParam> parameters, CancellationToken token)
@@ -26,10 +25,13 @@ namespace FFmpeg.Model
             int duration = await GetDurationAsync(media, parameters, token);
 
             log.Info(duration);
+            media.State = State.Converting;
             await foreach (string result in process.ResultAsync(token))
             {
                 ProcessResult(media, result, duration);
             }
+            media.Eta = "Finished";
+            media.State = State.Finished;
             log.Info($"{media.FileName} finished");
         }
 
