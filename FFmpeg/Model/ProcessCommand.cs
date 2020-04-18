@@ -31,7 +31,7 @@ namespace FFmpeg.Model
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
             string result = await channel.Reader.ReadAsync(token);
-            while (result != null)
+            while (result != null && !token.IsCancellationRequested)
             {
                 token.ThrowIfCancellationRequested();
                 yield return result;

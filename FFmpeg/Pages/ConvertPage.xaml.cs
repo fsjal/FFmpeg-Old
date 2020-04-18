@@ -5,6 +5,7 @@ using FFmpeg.Model.Codecs;
 using FFmpeg.Util;
 using log4net;
 using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -22,6 +23,21 @@ namespace FFmpeg.Pages
         public ListCollectionView MediasView { get; }
         public RelayCommand AddFiles { get; } = new RelayCommand();
         public RelayCommand Convert { get; } = new RelayCommand();
+        public RelayCommand Clear { get; } = new RelayCommand();
+        public RelayCommand Remove { get; } = new RelayCommand();
+        private bool isWorking = false;
+        public bool IsWorking
+        {
+            get
+            {
+                return isWorking;
+            }
+            set
+            {
+                isWorking = value;
+                OnPropertyChanged("IsWorking");
+            }
+        }
 
         // Media
         private string mediaStart;
@@ -154,6 +170,11 @@ namespace FFmpeg.Pages
             }
         }
 
+        // Media list
+        public Media SelectedMedia { get; set; }
+        public int SelectedMediaIndex { get; set; }
+
+        private CancellationTokenSource tokenSource;
         public event PropertyChangedEventHandler PropertyChanged;
 
         // Logging
@@ -163,7 +184,6 @@ namespace FFmpeg.Pages
         {
             InitializeComponent();
             SetupCommands();
-
             MediasView = new ListCollectionView(Medias);
             MediasView.GroupDescriptions.Add(new PropertyGroupDescription("State"));
             MediasView.IsLiveGrouping = true;
@@ -172,11 +192,14 @@ namespace FFmpeg.Pages
 
         private void SetupCommands()
         {
-            AddFiles.CanExecuteCommand = (e) => true;
-            AddFiles.ExecuteCommand = (e) => OnAddFileClicked();
-            Convert.CanExecuteCommand = (e) => Medias.Count != 0;
-            Convert.CanExecuteCommand = (e) => true;
-            Convert.ExecuteCommand = (e) => OnConvert();
+            AddFiles.CanExecuteCommand = e => true;
+            AddFiles.ExecuteCommand = e => OnAddFileClicked();
+            Convert.CanExecuteCommand = e => Medias.Count != 0;
+            Convert.ExecuteCommand = e => { if (IsWorking) tokenSource.Cancel(); else OnConvert(); };
+            Clear.CanExecuteCommand = e => Medias.Count != 0;
+            Clear.ExecuteCommand = e => Medias.Clear();
+            Remove.CanExecuteCommand = e => SelectedMediaIndex != -1 && Medias.Count != 0;
+            Remove.ExecuteCommand = e => MediasView.RemoveAt(SelectedMediaIndex);
         }
 
         private void OnAddFileClicked()
@@ -236,11 +259,25 @@ namespace FFmpeg.Pages
         private async void StartConvert(List<IParam> parameters)
         {
             string param = string.Join(" ", parameters.Select(e => $"{e.Key} {e.Value}"));
-            foreach (Media media in Medias)
+            List<Media> medias = Medias.Where(e => e.State != State.Finished).ToList();
+            tokenSource = new CancellationTokenSource();
+
+            IsWorking = true;
+            try
             {
-                CancellationTokenSource tokenSource = new CancellationTokenSource();
-                await FFmpegConverter.ConvertAsync(media, parameters, tokenSource.Token);
-                log.Info("finished");
+                foreach (Media media in medias)
+                {
+                    await FFmpegConverter.ConvertAsync(media, parameters, tokenSource.Token);
+                    log.Info("finished");
+                }
+            } 
+            catch(OperationCanceledException)
+            {
+                
+            }
+            finally
+            {
+                IsWorking = false;
             }
         }
 

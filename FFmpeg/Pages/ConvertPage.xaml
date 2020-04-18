@@ -28,7 +28,34 @@
         <Style x:Key="Spacing" TargetType="{x:Type Control}">
             <Setter Property="Margin" Value="0,3" />
         </Style>
+        <Style x:Key="RoundedButton" TargetType="Button">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="BorderBrush" Value="Green" />
+            <Setter Property="Foreground" Value="Green" />
+            <Setter Property="Margin" Value="0,0,5,0" />
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="10" BorderThickness="2" BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsPressed" Value="true">
+                    <Setter Property="Background" Value="Green" />
+                    <Setter Property="Foreground" Value="White" />
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="BorderBrush" Value="Gray" />
+                    <Setter Property="Foreground" Value="Gray" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
         <converters:FieldConverter x:Key="FieldConverter" />
+        <converters:ButtonContentConverter x:Key="ButtonContentConverter" />
     </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -84,7 +111,7 @@
                 </Border>
             </Grid>
         </Grid>
-        <ListView Grid.Row="1" Margin="5,5" ItemsSource="{Binding MediasView}">
+        <ListView Grid.Row="1" Margin="5,5" ItemsSource="{Binding MediasView}" SelectedItem="{Binding SelectedMedia}" SelectedIndex="{Binding SelectedMediaIndex}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Filename" DisplayMemberBinding="{Binding FileName}" Width="400" />
@@ -111,9 +138,13 @@
                 </GroupStyle>
             </ListView.GroupStyle>
         </ListView>
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,5,0" Width="134">
-            <Button Content="Add Files" Padding="10,0" Command="{Binding AddFiles}" />
-            <Button Content="Convert" Padding="10,0" Command="{Binding Convert}" />
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="5,5,0,0">
+            <Button Content="Clear" Padding="10,0" Command="{Binding Clear}" Style="{StaticResource RoundedButton}" />
+            <Button Content="Remove" Padding="10,0" Command="{Binding Remove}" Style="{StaticResource RoundedButton}" />
+        </StackPanel>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,5,0">
+            <Button Content="Add Files" Padding="10,0" Command="{Binding AddFiles}" Style="{StaticResource RoundedButton}" />
+            <Button Content="{Binding IsWorking, Converter={StaticResource ButtonContentConverter}}" Padding="10,0" Command="{Binding Convert}" Style="{StaticResource RoundedButton}" />
         </StackPanel>
     </Grid>
 </Page>
